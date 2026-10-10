@@ -33,17 +33,19 @@ export default function HomePage() {
 
   // Client JWT token matching BetterAuth session secret
   const [token, setToken] = useState(
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDEiLCJvcmdfaWQiOiJiMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDEiLCJvcmdfc2x1ZyI6ImFjbWUtY3liZXJuZXRpY3MiLCJyb2xlIjoib3duZXIiLCJleHAiOjE4OTM0NTYwMDB9.PZ5l_bA2Zt_7qH4p3c0e_XWnK6l_V0cZ3v3n8XQ6u9Q"
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDEiLCJvcmdfaWQiOiJiMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDEiLCJvcmdfc2x1ZyI6ImFjbWUtY3liZXJuZXRpY3MiLCJyb2xlIjoib3duZXIiLCJleHAiOjE4OTM0NTYwMDB9.PZWAOu6ouiIWLuYW0oZQe99XEd4d25Zz8DMnykHIlrM"
   );
 
   const [isLoading, setIsLoading] = useState(false);
   const [healthResult, setHealthResult] = useState<TenantHealthResponse | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isSimulatedBreach, setIsSimulatedBreach] = useState(false);
 
   const handlePingHealthcheck = async (simulatedOrgId?: string) => {
     setIsLoading(true);
     setErrorMsg(null);
     setHealthResult(null);
+    setIsSimulatedBreach(Boolean(simulatedOrgId));
 
     try {
       const data = await fetchTenantHealth({
@@ -233,7 +235,11 @@ export default function HomePage() {
               >
                 <AlertCircle className="w-5 h-5 flex-shrink-0 text-rose-400 mt-0.5" />
                 <div>
-                  <div className="font-bold text-rose-200">Tenant Boundary Enforcement Succeeded</div>
+                  <div className="font-bold text-rose-200">
+                    {isSimulatedBreach
+                      ? "Tenant Boundary Enforcement Succeeded"
+                      : "Connection Error / Request Failed"}
+                  </div>
                   <div className="mt-1">{errorMsg}</div>
                 </div>
               </div>
