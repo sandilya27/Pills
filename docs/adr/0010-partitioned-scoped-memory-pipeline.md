@@ -1,0 +1,3 @@
+# Partitioned Scoped Memory Pipeline
+
+We evaluated maintaining a shared vector memory pool versus enforcing partitioned visibility domains. We decided that agent memory extraction runs asynchronously via background worker jobs upon task completion and is strictly partitioned into three isolated scopes: User Scope (user styling and personal preferences), Agent Private Scope (agent domain heuristics and learnings), and Organization Scope (shared enterprise policies). Agents cannot read the private domain memories of other agents, preventing accidental cross-pollination of sensitive operational credentials and domain data.

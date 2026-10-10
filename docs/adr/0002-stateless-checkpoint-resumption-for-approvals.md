@@ -1,0 +1,3 @@
+# Stateless Checkpoint Resumption for Human Approvals
+
+We considered keeping worker tasks blocked in memory while waiting for human authorization versus terminating the worker and resuming later. We decided to implement stateless checkpoint-and-resume, where the Tool Gateway persists conversation history, pending tool parameters, and task state to PostgreSQL before exiting the worker job immediately. When an authorized user approves the action, a new SAQ worker job is scheduled with the synthetic approval result, preventing worker pool starvation and ensuring resilience across server restarts.

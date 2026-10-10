@@ -1,0 +1,3 @@
+# Instruction-Only Skill Boundaries
+
+We evaluated whether Skills could bundle executable tool definitions or dynamically grant tool permissions to assigned agents, versus remaining strictly instructional packages. We decided that Skills are purely instructional Standard Operating Procedures (`SKILL.md`) that may declare prerequisite tool dependencies, but cannot grant or register tools. The Tool Gateway and tenant-level `agent_tool_permissions` remain the sole authority for tool authorization, failing fast if a Pill attempts a Skill without requisite pre-approved tools. This enforces principle of least privilege and prevents malicious or unauthorized permission escalations via imported skills.

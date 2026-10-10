@@ -1,0 +1,3 @@
+# Hierarchical Group Delegation UI Presentation
+
+We evaluated flat multi-party chat representations versus hierarchical executive presentation for multi-agent collaboration. We decided that group threads render only the user prompt and the Lead Pill's synthesized executive response in the primary conversational timeline. When the Lead Pill delegates subtasks to member Pills, the delegated execution streams inside inline, collapsible Subtask Delegation Cards showing the member's capsule avatar, tool traces, and local findings. This keeps the main timeline focused on outcomes while preserving full execution transparency.

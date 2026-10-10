@@ -1,0 +1,3 @@
+# Unified Durable Task Execution Model
+
+We evaluated whether to use direct HTTP streaming for interactive workspace chats alongside an asynchronous queue for long-running jobs, or to route all execution through a single queue. We decided that every agent invocation (interactive chat turn or background job) will instantiate a durable `Task` executed by SAQ background workers and streamed via Redis Pub/Sub to SSE. This avoids maintaining dual execution pipelines, guarantees complete PostgreSQL audit logs, and allows long-lived Human-in-the-Loop approval pauses without dropping client HTTP connections.

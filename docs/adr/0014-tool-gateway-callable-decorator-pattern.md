@@ -1,0 +1,3 @@
+# Tool Gateway Callable Decorator Pattern
+
+We evaluated subclassing or monkey-patching internal Pydantic AI runner classes versus wrapping discovered tool functions with pre-execution decorator wrappers. We decided that the Tool Gateway wraps each tool callable with a standardized security decorator before registering it with the agent. The wrapper verifies per-agent permissions against the Tool Registry, raises an `ApprovalRequiredInterrupt` when approval gates are encountered, tracks execution duration, and writes telemetry to `task_events`, preserving native Python function signatures and type checking.

@@ -1,0 +1,3 @@
+# Decoupling Conversational Threads from Task Executions
+
+We evaluated storing conversation history directly within mutating `tasks` versus separating conversational entities from execution units. We decided to create explicit `threads` and `messages` tables, where each user prompt initiates a distinct `Task` linked via `thread_id` and `trigger_message_id`. Intermediate execution steps, tool logs, and approval pauses stream into `task_events`, while only finalized outputs commit to `messages`. This keeps the chat timeline clean, supports branching and regenerative prompts in assistant-ui, and isolates voluminous agent execution traces from conversation state.

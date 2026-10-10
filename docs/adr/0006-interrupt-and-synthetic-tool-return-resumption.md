@@ -1,0 +1,3 @@
+# Interrupt and Synthetic ToolReturn Resumption Pattern
+
+We evaluated how to halt and resume Pydantic AI agent executions during human authorization checkpoints without blocking worker processes. We decided that the Tool Gateway raises an `ApprovalRequiredInterrupt` when an approval-gated tool is invoked, serializing the model's message history to `tasks.checkpoint_state` and concluding the initial worker run. Upon human approval or rejection via the API, a new SAQ job resumes execution by passing the checkpointed history to Pydantic AI alongside a synthetic `ToolReturn` containing either the approved execution result or the rejection rationale. This strictly follows LLM function-calling protocols without memory leakage or prompt engineering workarounds.
