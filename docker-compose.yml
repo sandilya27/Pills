@@ -1,0 +1,38 @@
+name: pills
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: pills-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-pills}
+      POSTGRES_USER: ${POSTGRES_USER:-pills}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pills}
+    volumes:
+      - pills_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-pills} -d ${POSTGRES_DB:-pills}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: pills-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - pills_redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pills_pgdata:
+  pills_redisdata:

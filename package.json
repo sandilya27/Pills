@@ -1,0 +1,17 @@
+{
+  "name": "pills",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.33.4",
+  "scripts": {
+    "dev:web": "pnpm --filter @pills/web dev",
+    "dev:api": "uv run --directory apps/api uvicorn main:app --reload --port 8000",
+    "build:web": "pnpm --filter @pills/web build",
+    "test:web": "pnpm --filter @pills/web test",
+    "test:api": "uv run --directory apps/api pytest",
+    "test:e2e": "pnpm --filter @pills/web test:e2e",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:status": "docker compose ps"
+  }
+}
