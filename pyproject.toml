@@ -11,3 +11,11 @@ members = [
     "apps/api",
     "packages/forge",
 ]
+
+[tool.pyright]
+extraPaths = [
+    "apps/api/src",
+    "packages/forge/src",
+]
+venvPath = "."
+venv = ".venv"

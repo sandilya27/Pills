@@ -36,3 +36,9 @@ packages = ["src/api"]
 asyncio_mode = "auto"
 testpaths = ["tests"]
 pythonpath = ["src"]
+
+[tool.pyright]
+extraPaths = [
+    "src",
+    "../../packages/forge/src",
+]
