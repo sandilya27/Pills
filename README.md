@@ -144,41 +144,75 @@ pills/
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Run Guide & Local Setup
 
 ### Prerequisites
 - **Node.js**: v20+
-- **pnpm**: v9+
-- **Python**: 3.12+
-- **uv**: Fast Python package manager (`pip install uv`)
+- **pnpm**: v10+
+- **Python**: 3.12
+- **uv**: Fast Python package manager ([Astral uv](https://docs.astral.sh/uv/))
 - **Docker**: Docker Desktop or Docker Engine
 
-### 1. Clone & Setup
+### 1. Clone & Infrastructure
 ```bash
-git clone git@github.com:sandilya27/Pills.git
+git clone https://github.com/sandilya27/Pills.git
 cd Pills
+
+# Launch PostgreSQL 16 (+ pgvector) and Redis 7
+docker compose up -d
 ```
 
-### 2. Start Infrastructure
+### 2. Install Workspace Dependencies
 ```bash
-docker compose up -d postgres redis
-```
+# Python workspace dependencies (apps/api and packages/forge)
+uv sync --python 3.12
 
-### 3. Backend Setup
-```bash
-uv venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-uv pip install -e ".[dev]"
-alembic upgrade head
-```
-
-### 4. Frontend Setup
-```bash
+# Node.js workspace dependencies (apps/web)
 pnpm install
-pnpm dev
 ```
 
-The web dashboard runs at `http://localhost:3000` and the API documentation at `http://localhost:8000/docs`.
+### 3. Seed Development Database
+```bash
+pnpm db:seed
+# Or: uv run --directory apps/api python -m api.db.seed
+```
+
+### 4. Run Development Servers
+```bash
+# Run FastAPI Backend on :8000
+pnpm dev:api
+# Or: uv run --directory apps/api uvicorn api.main:app --reload --port 8000
+
+# Run Next.js 15 Web Application on :3000
+pnpm dev:web
+# Or: pnpm --filter @pills/web dev
+```
+- **Web Client**: [http://localhost:3000](http://localhost:3000)
+- **FastAPI OpenAPI Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Healthcheck Endpoint**: [http://localhost:8000/api/v1/health](http://localhost:8000/api/v1/health)
+
+### 5. Run Test Suites
+```bash
+# Run backend tenant isolation & API test suite (Pytest)
+pnpm test:api
+
+# Run frontend end-to-end component test suite (Vitest)
+pnpm test:web
+
+# Run all test suites across the monorepo
+pnpm test
+```
+
+---
+
+## 🤝 Contributing
+
+Contributions, bug reports, and pull requests are warmly welcomed! Please read our [**Contributing Guide (CONTRIBUTING.md)**](CONTRIBUTING.md) for details on:
+- Domain language rules and entity conventions ([`GLOSSARY.md`](GLOSSARY.md))
+- Settled architectural decisions ([`docs/adr/`](docs/adr/))
+- Branch naming and Conventional Commit guidelines
+- Triage labels and issue tracking workflows ([`docs/agents/`](docs/agents/))
+- Public-seam testing standards
 
 ---
 
@@ -188,9 +222,11 @@ The web dashboard runs at `http://localhost:3000` and the API documentation at `
 - **[Architectural Decision Records](docs/adr/)**: 16 settled ADRs governing execution, security, sandboxing, memory, and multi-agent coordination.
 - **[MVP Specification](docs/specs/0001-pills-platform-mvp.md)**: Comprehensive specification tracking user stories, schemas, and testing seams.
 - **[Parent GitHub Issue #1](https://github.com/sandilya27/Pills/issues/1)**: Live tracking issue on GitHub.
+- **[CONTRIBUTING.md](CONTRIBUTING.md)**: Operational and engineering guidelines for contributors.
 
 ---
 
 ## 📄 License
 
 Pills is licensed under the **MIT License**.
+
