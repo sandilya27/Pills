@@ -29,6 +29,41 @@ const API_BASE =
   process.env.NEXT_PUBLIC_API_URL ||
   (typeof window !== "undefined" ? "/api/v1" : "http://127.0.0.1:8000/api/v1");
 
+export type PillStatus = "idle" | "thinking" | "executing_tool" | "awaiting_approval";
+
+export interface Pill {
+  id: string;
+  name: string;
+  slug: string;
+  role: string;
+  tagline: string;
+  avatar_seed: string;
+  accent_color: string;
+  body_color: string;
+  body_silhouette: string;
+  status: PillStatus;
+}
+
+export async function fetchAgents(options: {
+  token: string;
+  orgId: string;
+  signal?: AbortSignal;
+}): Promise<Pill[]> {
+  const res = await fetch(`${API_BASE}/agents`, {
+    credentials: "include",
+    headers: { Accept: "application/json", Authorization: `Bearer ${options.token}`, "X-Organization-Id": options.orgId },
+    signal: options.signal,
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw new Error(error.detail || `Unable to load Pills (${res.status})`);
+  }
+  const data = await res.json();
+  if (!Array.isArray(data)) throw new Error("Invalid roster response");
+  return data;
+}
+
 export async function fetchPublicHealth(): Promise<PublicHealthResponse> {
   const res = await fetch(`${API_BASE}/health`, {
     method: "GET",

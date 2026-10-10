@@ -22,9 +22,10 @@ describe("Ticket 01: Tenant-Authenticated Healthcheck E2E", () => {
 
   beforeEach(() => {
     vi.restoreAllMocks();
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => [] }));
   });
 
-  it("renders the monorepo workspace and organization status correctly", () => {
+  it("renders the monorepo workspace and organization status correctly", async () => {
     render(<HomePage />);
 
     expect(screen.getByText("PILLS")).toBeInTheDocument();
@@ -34,14 +35,15 @@ describe("Ticket 01: Tenant-Authenticated Healthcheck E2E", () => {
     expect(screen.getByText("PostgreSQL 16 + pgvector")).toBeInTheDocument();
     expect(screen.getByText("Redis 7")).toBeInTheDocument();
     expect(screen.getByText("FastAPI API")).toBeInTheDocument();
+    await screen.findByText("No Pills in this workspace yet.");
   });
 
   it("authenticated user triggers healthcheck ping and receives validated tenant context", async () => {
-    const fetchMock = vi.fn().mockImplementation(() =>
+    const fetchMock = vi.fn().mockImplementation((url: string) =>
       Promise.resolve({
         ok: true,
         status: 200,
-        json: () => Promise.resolve(mockTenantResponse),
+        json: () => Promise.resolve(url.endsWith("/agents") ? [] : mockTenantResponse),
       })
     );
     vi.stubGlobal("fetch", fetchMock);
@@ -73,7 +75,8 @@ describe("Ticket 01: Tenant-Authenticated Healthcheck E2E", () => {
   });
 
   it("triggers cross-tenant boundary breach simulation and surfaces 403 error", async () => {
-    const fetchMock = vi.fn().mockImplementation(() =>
+    const fetchMock = vi.fn().mockImplementation((url: string) => url.endsWith("/agents")
+      ? Promise.resolve({ ok: true, json: async () => [] }) :
       Promise.resolve({
         ok: false,
         status: 403,

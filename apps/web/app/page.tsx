@@ -15,6 +15,7 @@ import {
   Sparkles
 } from "lucide-react";
 import { fetchTenantHealth, type TenantHealthResponse } from "@/lib/api-client";
+import { RosterBar } from "@/components/roster-bar";
 
 export default function HomePage() {
   // Demo session state representing an authenticated organization workspace
@@ -96,6 +97,8 @@ export default function HomePage() {
           </div>
         </div>
       </header>
+
+      <RosterBar token={token} orgId={activeOrg.id} />
 
       {/* Hero Overview */}
       <section className="flex flex-col gap-3">

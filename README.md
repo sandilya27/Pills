@@ -147,7 +147,7 @@ pills/
 ## 🚀 Run Guide & Local Setup
 
 ### Prerequisites
-- **Node.js**: v20+
+- **Node.js**: v22+ (required by DiceBear 10)
 - **pnpm**: v10+
 - **Python**: 3.12
 - **uv**: Fast Python package manager ([Astral uv](https://docs.astral.sh/uv/))
@@ -176,6 +176,13 @@ pnpm install
 pnpm db:seed
 # Or: uv run --directory apps/api python -m api.db.seed
 ```
+
+The seed command creates the seven founding Pills in the demo workspace and can
+be run repeatedly without duplicating them. The homepage roster loads from
+`GET /api/v1/agents` with the active Tenant Context and refreshes every five
+seconds. Capsule faces use locally generated DiceBear Gaze SVGs, with wandering
+and blinking eyes and status halos for idle, thinking, tool execution, and
+approval waits. Animations respect the system's reduced-motion preference.
 
 ### 4. Run Development Servers
 ```bash

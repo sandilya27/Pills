@@ -6,6 +6,7 @@ from sqlmodel import SQLModel
 from api.config import get_settings
 from api.db.session import engine
 from api.routers.health import router as health_router
+from api.routers.agents import router as agents_router
 
 settings = get_settings()
 
@@ -38,6 +39,7 @@ app.add_middleware(
 
 # Mount API Routers
 app.include_router(health_router, prefix=settings.API_V1_PREFIX)
+app.include_router(agents_router, prefix=settings.API_V1_PREFIX)
 
 
 @app.get("/")

@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+.pill-avatar { position: relative; display: inline-flex; border-radius: 50%; box-shadow: 0 0 18px color-mix(in srgb, var(--pill-led) 25%, transparent); }
+.pill-avatar img { display: block; }
+.pill-led { position: absolute; bottom: 5%; right: 15%; width: 10px; height: 10px; border-radius: 50%; background: var(--pill-led); box-shadow: 0 0 10px var(--pill-led); border: 2px solid #0f172a; }
+.pill-avatar[data-status="thinking"] { animation: pill-thinking 1.8s ease-in-out infinite; }
+.pill-avatar[data-status="executing_tool"] { animation: pill-thinking .8s ease-in-out infinite; }
+.pill-avatar[data-status="awaiting_approval"] .pill-led { animation: pill-waiting 1.2s ease-in-out infinite; }
+@keyframes pill-thinking { 50% { box-shadow: 0 0 28px color-mix(in srgb, var(--pill-led) 70%, transparent); } }
+@keyframes pill-waiting { 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .pill-avatar, .pill-led { animation: none !important; } }
+
 @layer base {
   :root {
     --background: 222 47% 7%;
