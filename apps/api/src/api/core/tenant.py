@@ -5,7 +5,7 @@ import jwt
 from fastapi import Depends, Header, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import select
+from sqlmodel import col, select
 
 from api.config import get_settings
 from api.db.models import Member, Organization, Session, User
@@ -82,7 +82,7 @@ async def get_tenant_context(
 
     # 2. Database session lookup if not resolved via JWT
     if not user_id:
-        stmt = select(Session).where(Session.token == token)
+        stmt = select(Session).where(col(Session.token) == token)
         res = await db.execute(stmt)
         session_record = res.scalar_one_or_none()
 
@@ -113,7 +113,7 @@ async def get_tenant_context(
     target_org: Optional[Organization] = None
 
     if x_organization_id:
-        res = await db.execute(select(Organization).where(Organization.id == x_organization_id))
+        res = await db.execute(select(Organization).where(col(Organization.id) == x_organization_id))
         target_org = res.scalar_one_or_none()
         if not target_org:
             raise HTTPException(
@@ -121,7 +121,7 @@ async def get_tenant_context(
                 detail=f"Organization with id '{x_organization_id}' not found.",
             )
     elif x_organization_slug:
-        res = await db.execute(select(Organization).where(Organization.slug == x_organization_slug))
+        res = await db.execute(select(Organization).where(col(Organization.slug) == x_organization_slug))
         target_org = res.scalar_one_or_none()
         if not target_org:
             raise HTTPException(
@@ -129,23 +129,23 @@ async def get_tenant_context(
                 detail=f"Organization with slug '{x_organization_slug}' not found.",
             )
     elif org_id_claim:
-        res = await db.execute(select(Organization).where(Organization.id == org_id_claim))
+        res = await db.execute(select(Organization).where(col(Organization.id) == org_id_claim))
         target_org = res.scalar_one_or_none()
         if not target_org and org_slug_claim:
-            res = await db.execute(select(Organization).where(Organization.slug == org_slug_claim))
+            res = await db.execute(select(Organization).where(col(Organization.slug) == org_slug_claim))
             target_org = res.scalar_one_or_none()
 
     if not target_org:
         # Check if user has an active membership in any organization
         membership_res = await db.execute(
-            select(Member, Organization)
-            .join(Organization, Member.organizationId == Organization.id)
-            .where(Member.userId == user_id)
-            .limit(1)
+            select(Member).where(col(Member.userId) == user_id).limit(1)
         )
-        first_match = membership_res.first()
-        if first_match:
-            _, target_org = first_match
+        first_membership = membership_res.scalar_one_or_none()
+        if first_membership:
+            org_res = await db.execute(
+                select(Organization).where(col(Organization.id) == first_membership.organizationId)
+            )
+            target_org = org_res.scalar_one_or_none()
 
     if not target_org:
         raise HTTPException(
@@ -156,8 +156,8 @@ async def get_tenant_context(
     # 3. STRICT TENANT BOUNDARY CHECK:
     # Verify user is explicitly a member of the resolved organization in the database
     member_stmt = select(Member).where(
-        Member.organizationId == target_org.id,
-        Member.userId == user_id,
+        col(Member.organizationId) == target_org.id,
+        col(Member.userId) == user_id,
     )
     member_res = await db.execute(member_stmt)
     membership = member_res.scalar_one_or_none()
